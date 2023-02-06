@@ -1,0 +1,38 @@
+version: '3.1'
+
+services:
+  mongo:
+    image: mongo:6.0.4-jammy
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    restart: always
+    networks:
+      - mongo_network
+    volumes:
+      - mongo_data:/var/lib/mongodb/data
+
+  mongo-express:
+    image: mongo-express:latest
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: root
+      ME_CONFIG_BASICAUTH_PASSWORD: example
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_MONGODB_PORT: 27017
+    ports:
+      - "8081:8081"
+    restart: always
+    networks:
+      - mongo_network
+    depends_on:
+      - mongo
+
+networks:
+  mongo_network:
+    driver: bridge
+volumes:
+  mongo_data:
